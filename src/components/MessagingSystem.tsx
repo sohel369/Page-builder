@@ -88,9 +88,10 @@ const initialChats: Chat[] = [
 
 interface MessagingSystemProps {
     isArabic?: boolean;
+    currentTheme?: string;
 }
 
-export function MessagingSystem({ isArabic = false }: MessagingSystemProps) {
+export function MessagingSystem({ isArabic = false, currentTheme = '#0B1F3B' }: MessagingSystemProps) {
     const [chats, setChats] = useState<Chat[]>(initialChats);
     const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
     const [messageInput, setMessageInput] = useState('');
@@ -160,13 +161,16 @@ export function MessagingSystem({ isArabic = false }: MessagingSystemProps) {
     };
 
     return (
-        <div className="flex h-full bg-slate-950/20 backdrop-blur-sm overflow-hidden animate-fade-in rounded-3xl border border-white/5 m-4">
+        <div
+            className="flex h-full overflow-hidden animate-fade-in relative shadow-2xl"
+            style={{ backgroundColor: currentTheme }}
+        >
             {/* Sidebar - Chat List */}
             <div className={cn(
-                "w-full md:w-96 flex flex-col border-white/5 bg-slate-950/40 transition-all duration-300",
+                "w-full md:w-96 flex flex-col border-white/5 transition-all duration-300",
                 isArabic ? "border-l" : "border-r",
                 selectedChatId ? "hidden md:flex" : "flex"
-            )}>
+            )} style={{ backgroundColor: currentTheme }}>
                 <div className="p-6 border-b border-white/5">
                     <h2 className="text-xl font-black text-white mb-4 tracking-tight">
                         {isArabic ? 'الرسائل' : 'Messages'}
@@ -176,7 +180,7 @@ export function MessagingSystem({ isArabic = false }: MessagingSystemProps) {
                         <input
                             type="text"
                             placeholder={isArabic ? 'البحث عن المحادثات...' : 'Search messages...'}
-                            className="w-full pl-11 pr-4 py-3 bg-white/5 rounded-2xl text-sm border border-white/1 border-white/5 focus:ring-1 focus:ring-primary/50 outline-none text-white transition-all"
+                            className="w-full pl-11 pr-4 py-3 bg-white/5 rounded-2xl text-sm border border-white/5 focus:ring-1 focus:ring-primary/50 outline-none text-white transition-all"
                         />
                     </div>
                 </div>
@@ -203,7 +207,10 @@ export function MessagingSystem({ isArabic = false }: MessagingSystemProps) {
                                     {chat.name[0]}
                                 </div>
                                 {chat.online && (
-                                    <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-slate-950 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+                                    <div
+                                        className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]"
+                                        style={{ borderColor: currentTheme }}
+                                    />
                                 )}
                             </div>
                             <div className="flex-1 text-left min-w-0">
@@ -227,10 +234,13 @@ export function MessagingSystem({ isArabic = false }: MessagingSystemProps) {
             </div>
 
             {/* Main Chat Area */}
-            <div className={cn(
-                "flex-1 flex flex-col min-w-0 bg-slate-950/20 transition-all duration-300",
-                !selectedChatId ? "hidden md:flex" : "flex"
-            )}>
+            <div
+                className={cn(
+                    "flex-1 flex flex-col min-w-0 transition-all duration-300",
+                    !selectedChatId ? "hidden md:flex" : "flex"
+                )}
+                style={{ backgroundColor: currentTheme }}
+            >
                 {!selectedChatId ? (
                     <div className="flex-1 flex flex-col items-center justify-center text-white/20 gap-6 p-12 text-center">
                         <div className="w-24 h-24 bg-white/5 rounded-[2.5rem] flex items-center justify-center border border-white/5 shadow-inner animate-pulse">
@@ -244,7 +254,10 @@ export function MessagingSystem({ isArabic = false }: MessagingSystemProps) {
                 ) : (
                     <>
                         {/* Chat Header */}
-                        <div className="h-20 border-b border-white/5 bg-slate-950/40 flex items-center justify-between px-6 backdrop-blur-md">
+                        <div
+                            className="h-20 border-b border-white/5 flex items-center justify-between px-6 backdrop-blur-md"
+                            style={{ backgroundColor: `${currentTheme}E6` }}
+                        >
                             <div className="flex items-center gap-4">
                                 <button
                                     onClick={() => setSelectedChatId(null)}
@@ -322,7 +335,10 @@ export function MessagingSystem({ isArabic = false }: MessagingSystemProps) {
                         </div>
 
                         {/* Input Area */}
-                        <div className="p-6 bg-slate-950/40 border-t border-white/5 backdrop-blur-md">
+                        <div
+                            className="p-6 border-t border-white/5 backdrop-blur-md"
+                            style={{ backgroundColor: `${currentTheme}E6` }}
+                        >
                             <div className="flex items-center gap-4 bg-white/5 p-2 rounded-[2rem] border border-white/5 shadow-inner focus-within:border-primary/30 focus-within:bg-white/10 transition-all">
                                 <div className="flex items-center">
                                     <button className="p-3 text-white/30 hover:text-primary transition-all hover:bg-white/5 rounded-full">

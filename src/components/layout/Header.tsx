@@ -15,7 +15,8 @@ import {
   Share2,
   PlusCircle,
   Command,
-  Zap
+  Zap,
+  Palette
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { User as FirebaseUser } from 'firebase/auth';
@@ -28,6 +29,8 @@ interface HeaderProps {
   isMenuOpen?: boolean;
   user?: FirebaseUser | null;
   onLogout?: () => void;
+  currentTheme?: string;
+  onThemeChange?: (theme: string) => void;
 }
 
 export function Header({
@@ -37,7 +40,9 @@ export function Header({
   onMenuToggle,
   isMenuOpen,
   user,
-  onLogout
+  onLogout,
+  currentTheme,
+  onThemeChange
 }: HeaderProps) {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -77,10 +82,13 @@ export function Header({
   }, [isUserMenuOpen]);
 
   return (
-    <header className={cn(
-      "fixed top-0 h-header bg-slate-950 backdrop-blur-xl z-50 flex items-center justify-between px-6 md:px-10 border-b border-white/5",
-      isArabic ? "right-0 left-0 lg:right-sidebar" : "left-0 right-0 lg:left-sidebar"
-    )}>
+    <header
+      className={cn(
+        "fixed top-0 h-header backdrop-blur-xl z-50 flex items-center justify-between px-6 md:px-10 border-b border-white/5 transition-all duration-500",
+        isArabic ? "right-0 left-0 lg:right-sidebar" : "left-0 right-0 lg:left-sidebar"
+      )}
+      style={{ backgroundColor: `${currentTheme}E6` }} // adding 90% opacity
+    >
       {/* Search & Global Control */}
       <div className="flex items-center gap-6 flex-1">
         <button
@@ -130,6 +138,27 @@ export function Header({
           <Globe className="w-4 h-4" />
           {isArabic ? 'English' : 'Arabic'}
         </button>
+
+        {/* Theme Picker */}
+        <div className="flex items-center gap-1.5 bg-white/5 p-1 rounded-xl border border-white/5">
+          {[
+            { color: '#0B1F3B', name: 'Midnight' },
+            { color: '#020617', name: 'Slate' },
+            { color: '#111827', name: 'Gray' },
+            { color: '#000000', name: 'Black' },
+          ].map((theme) => (
+            <button
+              key={theme.color}
+              onClick={() => onThemeChange?.(theme.color)}
+              className={cn(
+                "w-6 h-6 rounded-lg border transition-all hover:scale-110 active:scale-95",
+                currentTheme === theme.color ? "border-primary scale-110 shadow-[0_0_10px_rgba(124,58,237,0.3)]" : "border-transparent"
+              )}
+              style={{ backgroundColor: theme.color }}
+              title={theme.name}
+            />
+          ))}
+        </div>
 
         <div className="w-px h-6 bg-white/10 mx-1 hidden sm:block" />
 

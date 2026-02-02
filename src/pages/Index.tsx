@@ -28,6 +28,7 @@ const Index = ({ user }: IndexProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showPalette, setShowPalette] = useState(false);
   const [showProperties, setShowProperties] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState('#0B1F3B'); // Default Midnight Blue
 
   const handleLogout = async () => {
     try {
@@ -120,9 +121,9 @@ const Index = ({ user }: IndexProps) => {
 
   return (
     <div className={cn(
-      "min-h-screen bg-background text-foreground transition-all duration-500",
+      "min-h-screen text-foreground transition-all duration-500",
       isArabic ? "rtl" : "ltr"
-    )} dir={isArabic ? "rtl" : "ltr"}>
+    )} dir={isArabic ? "rtl" : "ltr"} style={{ backgroundColor: currentTheme }}>
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[10%] left-[20%] w-[30%] h-[30%] bg-primary/5 rounded-full blur-[100px]" />
         <div className="absolute bottom-[10%] right-[20%] w-[30%] h-[30%] bg-accent/5 rounded-full blur-[100px]" />
@@ -148,16 +149,23 @@ const Index = ({ user }: IndexProps) => {
           isMenuOpen={isSidebarOpen}
           user={user}
           onLogout={handleLogout}
+          currentTheme={currentTheme}
+          onThemeChange={setCurrentTheme}
         />
 
 
 
-        <main className={cn(
-          "pt-header min-h-screen transition-all duration-500",
-          isArabic ? "lg:mr-sidebar" : "lg:ml-sidebar"
-        )}>
+        <main
+          className={cn(
+            "pt-header min-h-screen transition-all duration-500",
+            isArabic ? "lg:mr-sidebar" : "lg:ml-sidebar"
+          )}
+          style={{ "--theme-bg": currentTheme } as React.CSSProperties}
+        >
           <div className="h-[calc(100vh-var(--header-height))]">
-            {renderActiveView()}
+            {activeNavItem === 'Messages' ? (
+              <MessagingSystem isArabic={isArabic} currentTheme={currentTheme} />
+            ) : renderActiveView()}
           </div>
         </main>
       </div>
