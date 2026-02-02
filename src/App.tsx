@@ -43,7 +43,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={user ? <Navigate to="/dashboard" replace /> : <Landing />} />
             <Route path="/auth" element={!user ? <Auth /> : <Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={user ? <Index user={user} /> : <Navigate to="/auth" replace />} />
+            <Route path="/dashboard" element={user ? <Index user={user} /> : <Navigate to="/" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

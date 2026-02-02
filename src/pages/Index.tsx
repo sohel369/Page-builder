@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { BlockPalette } from '@/components/builder/BlockPalette';
@@ -20,6 +21,7 @@ interface IndexProps {
 }
 
 const Index = ({ user }: IndexProps) => {
+  const navigate = useNavigate();
   const [isArabic, setIsArabic] = useState(false);
   const [activeNavItem, setActiveNavItem] = useState('Dashboard');
   const [userRole, setUserRole] = useState<'admin' | 'moderator'>('admin');
@@ -30,6 +32,7 @@ const Index = ({ user }: IndexProps) => {
   const handleLogout = async () => {
     try {
       await signOut(auth);
+      navigate('/', { replace: true });
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -116,7 +119,10 @@ const Index = ({ user }: IndexProps) => {
   };
 
   return (
-    <div className={cn("min-h-screen bg-background text-foreground", isArabic && "rtl")}>
+    <div className={cn(
+      "min-h-screen bg-background text-foreground transition-all duration-500",
+      isArabic ? "rtl" : "ltr"
+    )} dir={isArabic ? "rtl" : "ltr"}>
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[10%] left-[20%] w-[30%] h-[30%] bg-primary/5 rounded-full blur-[100px]" />
         <div className="absolute bottom-[10%] right-[20%] w-[30%] h-[30%] bg-accent/5 rounded-full blur-[100px]" />
@@ -144,29 +150,7 @@ const Index = ({ user }: IndexProps) => {
           onLogout={handleLogout}
         />
 
-        <div className={cn(
-          "fixed bottom-6 z-[60] flex gap-2 p-1.5 glass rounded-2xl shadow-2xl border border-white/10",
-          isArabic ? "left-6" : "right-6"
-        )}>
-          <button
-            onClick={() => setUserRole('admin')}
-            className={cn(
-              "px-4 py-2 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest",
-              userRole === 'admin' ? "premium-gradient text-white shadow-lg" : "text-muted-foreground hover:bg-white/5"
-            )}
-          >
-            Admin
-          </button>
-          <button
-            onClick={() => setUserRole('moderator')}
-            className={cn(
-              "px-4 py-2 text-[10px] font-black rounded-xl transition-all uppercase tracking-widest",
-              userRole === 'moderator' ? "premium-gradient text-white shadow-lg" : "text-muted-foreground hover:bg-white/5"
-            )}
-          >
-            Editor
-          </button>
-        </div>
+
 
         <main className={cn(
           "pt-header min-h-screen transition-all duration-500",
@@ -182,5 +166,3 @@ const Index = ({ user }: IndexProps) => {
 };
 
 export default Index;
-
-

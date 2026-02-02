@@ -62,12 +62,12 @@ export default function DashboardHome({ isArabic = false }: { isArabic?: boolean
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                    { label: 'Total Engagement', value: '124.5k', change: '+14%', icon: Users, trend: 'up' },
-                    { label: 'Session Velocity', value: '18.2s', change: '+5%', icon: Zap, trend: 'up' },
-                    { label: 'CTR Index', value: '12.4%', change: '-2%', icon: MousePointer2, trend: 'down' },
-                    { label: 'Cloud Status', value: 'Active', icon: Globe, trend: 'neutral' },
+                    { label: isArabic ? 'إجمالي التفاعلات' : 'Total Engagement', value: '124.5k', change: '+14%', icon: Users, trend: 'up' },
+                    { label: isArabic ? 'سرعة الجلسة' : 'Session Velocity', value: '18.2s', change: '+5%', icon: Zap, trend: 'up' },
+                    { label: isArabic ? 'مؤشر النقر' : 'CTR Index', value: '12.4%', change: '-2%', icon: MousePointer2, trend: 'down' },
+                    { label: isArabic ? 'حالة السحابة' : 'Cloud Status', value: isArabic ? 'نشط' : 'Active', icon: Globe, trend: 'neutral' },
                 ].map((stat, i) => (
-                    <div key={i} className="p-6 rounded-3xl glass border border-white/10 group hover:border-primary/30 transition-all">
+                    <div key={i} className="p-6 rounded-3xl glass border border-white/10 group hover:border-primary/30 transition-all text-left">
                         <div className="flex justify-between items-start mb-4">
                             <div className="p-3 premium-gradient rounded-2xl text-white shadow-lg group-hover:scale-110 transition-transform">
                                 <stat.icon className="w-5 h-5" />
@@ -96,7 +96,7 @@ export default function DashboardHome({ isArabic = false }: { isArabic?: boolean
                             <div className="w-10 h-10 premium-gradient rounded-xl flex items-center justify-center font-bold text-white shadow-lg">
                                 <BarChart3 className="w-5 h-5" />
                             </div>
-                            <h3 className="text-xl font-bold">Growth Intelligence</h3>
+                            <h3 className="text-xl font-bold">{isArabic ? 'ذكاء النمو' : 'Growth Intelligence'}</h3>
                         </div>
                         <div className="flex gap-2">
                             <div className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full bg-primary/10 text-primary uppercase tracking-widest">Real-time Data</div>
