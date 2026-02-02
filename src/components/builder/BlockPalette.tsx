@@ -47,10 +47,12 @@ const blocks: BlockType[] = [
 
 interface BlockPaletteProps {
   isArabic?: boolean;
+  currentTheme?: string;
 }
 
-export function BlockPalette({ isArabic = false }: BlockPaletteProps) {
+export function BlockPalette({ isArabic = false, currentTheme = 'dark' }: BlockPaletteProps) {
   const [search, setSearch] = useState('');
+  const isWhite = currentTheme === 'white';
   const categories = [...new Set(blocks.map(b => b.category))];
 
   const filteredBlocks = blocks.filter(b =>
@@ -59,21 +61,27 @@ export function BlockPalette({ isArabic = false }: BlockPaletteProps) {
   );
 
   return (
-    <div className="w-80 bg-slate-950 border-r border-white/5 h-full flex flex-col font-sans">
-      <div className="p-6 border-b border-white/5">
-        <h3 className="font-black text-lg tracking-tight text-white mb-4 flex items-center gap-2">
+    <div className={cn(
+      "w-80 border-r h-full flex flex-col font-sans transition-all duration-500",
+      isWhite ? "bg-white border-slate-200" : "bg-slate-950 border-white/5"
+    )}>
+      <div className={cn("p-6 border-b", isWhite ? "border-slate-100" : "border-white/5")}>
+        <h3 className={cn("font-black text-lg tracking-tight mb-4 flex items-center gap-2", isWhite ? "text-slate-900" : "text-white")}>
           <Layers className="w-5 h-5 text-primary" />
           {isArabic ? 'مكتبة العناصر' : 'Block Factory'}
         </h3>
 
         <div className="relative group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 group-focus-within:text-primary transition-colors" />
+          <Search className={cn("absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors", isWhite ? "text-slate-300 group-focus-within:text-primary" : "text-white/30 group-focus-within:text-primary")} />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={isArabic ? 'ابحث عن عناصر...' : 'Find components...'}
-            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+            className={cn(
+              "w-full pl-10 pr-4 py-2 border rounded-xl text-xs transition-all font-medium outline-none",
+              isWhite ? "bg-slate-50 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/10" : "bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:ring-2 focus:ring-primary/20"
+            )}
           />
         </div>
       </div>
@@ -86,10 +94,10 @@ export function BlockPalette({ isArabic = false }: BlockPaletteProps) {
           return (
             <div key={category} className="space-y-3">
               <div className="flex items-center justify-between px-2">
-                <p className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em]">
+                <p className={cn("text-[10px] font-black uppercase tracking-[0.2em]", isWhite ? "text-slate-400" : "text-white/40")}>
                   {category}
                 </p>
-                <div className="h-px flex-1 bg-white/5 mx-3" />
+                <div className={cn("h-px flex-1 mx-3", isWhite ? "bg-slate-100" : "bg-white/5")} />
               </div>
 
               <div className="grid grid-cols-1 gap-2">
@@ -100,23 +108,28 @@ export function BlockPalette({ isArabic = false }: BlockPaletteProps) {
                       key={block.label}
                       draggable
                       className={cn(
-                        "flex items-start gap-4 p-4 rounded-2xl border border-transparent shadow-sm transition-all duration-300 cursor-grab active:cursor-grabbing text-left",
-                        "bg-white/5 hover:bg-white/[0.08] hover:border-white/10 hover:shadow-xl group",
+                        "flex items-start gap-4 p-4 rounded-2xl border transition-all duration-300 cursor-grab active:cursor-grabbing text-left group",
+                        isWhite
+                          ? "bg-white border-slate-100 hover:border-primary/30 hover:shadow-lg"
+                          : "bg-white/5 border-transparent hover:bg-white/[0.08] hover:border-white/10 hover:shadow-xl",
                       )}
                     >
-                      <div className="p-3 rounded-xl bg-slate-900 border border-white/5 group-hover:scale-110 group-hover:bg-primary/20 transition-all shadow-inner">
+                      <div className={cn(
+                        "p-3 rounded-xl border group-hover:scale-110 group-hover:bg-primary/20 transition-all shadow-inner",
+                        isWhite ? "bg-slate-50 border-slate-100" : "bg-slate-900 border-white/5"
+                      )}>
                         <Icon className="w-5 h-5 text-primary group-hover:text-white transition-colors" />
                       </div>
                       <div className="flex-1 min-w-0 py-0.5">
-                        <span className="block text-xs font-black text-white group-hover:text-primary transition-colors">
+                        <span className={cn("block text-xs font-black transition-colors group-hover:text-primary", isWhite ? "text-slate-900" : "text-white")}>
                           {isArabic ? block.labelAr : block.label}
                         </span>
-                        <span className="block text-[10px] text-white/30 font-bold mt-1 tracking-wide uppercase">
+                        <span className={cn("block text-[10px] font-bold mt-1 tracking-wide uppercase", isWhite ? "text-slate-400" : "text-white/30")}>
                           {isArabic ? block.descriptionAr : block.description}
                         </span>
                       </div>
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <MousePointer2 className="w-4 h-4 text-white/20" />
+                        <MousePointer2 className={cn("w-4 h-4", isWhite ? "text-slate-200" : "text-white/20")} />
                       </div>
                     </button>
                   );

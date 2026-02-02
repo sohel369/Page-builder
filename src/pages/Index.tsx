@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
@@ -28,7 +28,47 @@ const Index = ({ user }: IndexProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showPalette, setShowPalette] = useState(false);
   const [showProperties, setShowProperties] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState('#0B1F3B'); // Default Midnight Blue
+  const [themeMode, setThemeMode] = useState<'dark' | 'white' | 'system'>('dark');
+  const [resolvedTheme, setResolvedTheme] = useState('#0B1F3B');
+
+  // Theme resolution logic
+  useEffect(() => {
+    const root = window.document.documentElement;
+
+    const applyTheme = (mode: 'dark' | 'white' | 'system') => {
+      let color = '#0B1F3B';
+      let isDark = true;
+
+      if (mode === 'white') {
+        color = '#FAFAFB';
+        isDark = false;
+      } else if (mode === 'system') {
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        color = systemDark ? '#0B1F3B' : '#FAFAFB';
+        isDark = systemDark;
+      } else {
+        color = '#0B1F3B';
+        isDark = true;
+      }
+
+      setResolvedTheme(color);
+      if (isDark) {
+        root.classList.add('dark');
+      } else {
+        root.classList.remove('dark');
+      }
+    };
+
+    applyTheme(themeMode);
+
+    // Listen for system theme changes if in 'system' mode
+    if (themeMode === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = () => applyTheme('system');
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+  }, [themeMode]);
 
   const handleLogout = async () => {
     try {
@@ -42,40 +82,57 @@ const Index = ({ user }: IndexProps) => {
   const renderActiveView = () => {
     switch (activeNavItem) {
       case 'Dashboard':
-        return <DashboardHome isArabic={isArabic} />;
+        return <DashboardHome isArabic={isArabic} currentTheme={themeMode} />;
       case 'Page Builder':
+        const isWhite = themeMode === 'white';
         return (
-          <div className="flex h-[calc(100vh-var(--header-height))] relative overflow-hidden bg-slate-950">
+          <div className={cn(
+            "flex h-[calc(100vh-var(--header-height))] relative overflow-hidden transition-all duration-500",
+            isWhite ? "bg-[#FAFAFB]" : "bg-slate-950"
+          )}>
             {/* Block Palette - Sidebar on Desktop, Drawer on Mobile */}
             <div className={cn(
               "fixed inset-y-0 left-0 z-50 transition-transform duration-500 md:relative md:translate-x-0 md:z-auto",
               showPalette ? "translate-x-0" : "-translate-x-full"
             )}>
-              <BlockPalette isArabic={isArabic} />
+              <BlockPalette isArabic={isArabic} currentTheme={themeMode} />
               <button
                 onClick={() => setShowPalette(false)}
-                className="absolute top-4 right-4 md:hidden p-2 glass rounded-full text-white"
+                className={cn(
+                  "absolute top-4 right-4 md:hidden p-2 rounded-full transition-all",
+                  isWhite ? "bg-white text-slate-900 shadow-lg border border-slate-200" : "glass text-white"
+                )}
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             <div className="flex-1 flex flex-col min-w-0 relative">
-              <PageCanvas isArabic={isArabic} />
+              <PageCanvas isArabic={isArabic} currentTheme={themeMode} />
 
               {/* Mobile Floating Toggles for Builder Panels */}
               <div className="md:hidden fixed bottom-24 left-1/2 -translate-x-1/2 flex gap-3 z-40">
                 <button
                   onClick={() => setShowPalette(!showPalette)}
-                  className="px-4 py-2 glass rounded-full text-[10px] font-black uppercase tracking-widest text-white border border-white/10"
+                  className={cn(
+                    "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all shadow-xl",
+                    isWhite
+                      ? "bg-white text-slate-900 border-slate-200"
+                      : "glass text-white border-white/10"
+                  )}
                 >
-                  Library
+                  {isArabic ? 'العناصر' : 'Blocks'}
                 </button>
                 <button
                   onClick={() => setShowProperties(!showProperties)}
-                  className="px-4 py-2 glass rounded-full text-[10px] font-black uppercase tracking-widest text-white border border-white/10"
+                  className={cn(
+                    "px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all shadow-xl",
+                    isWhite
+                      ? "bg-white text-slate-900 border-slate-200"
+                      : "glass text-white border-white/10"
+                  )}
                 >
-                  Styles
+                  {isArabic ? 'الأنماط' : 'Styles'}
                 </button>
               </div>
             </div>
@@ -85,10 +142,13 @@ const Index = ({ user }: IndexProps) => {
               "fixed inset-y-0 right-0 z-50 transition-transform duration-500 lg:relative lg:translate-x-0 lg:z-auto",
               showProperties ? "translate-x-0" : "translate-x-full"
             )}>
-              <PropertiesPanel isArabic={isArabic} />
+              <PropertiesPanel isArabic={isArabic} currentTheme={themeMode} />
               <button
                 onClick={() => setShowProperties(false)}
-                className="absolute top-4 left-4 lg:hidden p-2 glass rounded-full text-white"
+                className={cn(
+                  "absolute top-4 left-4 lg:hidden p-2 rounded-full transition-all",
+                  isWhite ? "bg-white text-slate-900 shadow-lg border border-slate-200" : "glass text-white"
+                )}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -103,13 +163,13 @@ const Index = ({ user }: IndexProps) => {
           </div>
         );
       case 'Messages':
-        return <MessagingSystem isArabic={isArabic} />;
+        return <MessagingSystem isArabic={isArabic} currentTheme={themeMode} />;
       case 'Pages':
-        return <PageManagement isArabic={isArabic} userRole={userRole} />;
+        return <PageManagement isArabic={isArabic} userRole={userRole} currentTheme={themeMode} />;
       case 'Analytics':
-        return <AnalyticsDashboard isArabic={isArabic} />;
+        return <AnalyticsDashboard isArabic={isArabic} currentTheme={themeMode} />;
       case 'Broadcasts':
-        return <BroadcastPanel isArabic={isArabic} />;
+        return <BroadcastPanel isArabic={isArabic} currentTheme={themeMode} />;
       default:
         return (
           <div className="p-8 flex items-center justify-center h-full">
@@ -123,7 +183,7 @@ const Index = ({ user }: IndexProps) => {
     <div className={cn(
       "min-h-screen text-foreground transition-all duration-500",
       isArabic ? "rtl" : "ltr"
-    )} dir={isArabic ? "rtl" : "ltr"} style={{ backgroundColor: currentTheme }}>
+    )} dir={isArabic ? "rtl" : "ltr"}>
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-[10%] left-[20%] w-[30%] h-[30%] bg-primary/5 rounded-full blur-[100px]" />
         <div className="absolute bottom-[10%] right-[20%] w-[30%] h-[30%] bg-accent/5 rounded-full blur-[100px]" />
@@ -138,6 +198,7 @@ const Index = ({ user }: IndexProps) => {
         }}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
+        currentTheme={themeMode}
       />
 
       <div className="relative z-10">
@@ -149,8 +210,9 @@ const Index = ({ user }: IndexProps) => {
           isMenuOpen={isSidebarOpen}
           user={user}
           onLogout={handleLogout}
-          currentTheme={currentTheme}
-          onThemeChange={setCurrentTheme}
+          currentTheme={themeMode}
+          onThemeChange={(m) => setThemeMode(m as any)}
+          resolvedTheme={resolvedTheme}
         />
 
 
@@ -160,11 +222,11 @@ const Index = ({ user }: IndexProps) => {
             "pt-header min-h-screen transition-all duration-500",
             isArabic ? "lg:mr-sidebar" : "lg:ml-sidebar"
           )}
-          style={{ "--theme-bg": currentTheme } as React.CSSProperties}
+          style={{ "--theme-bg": resolvedTheme } as React.CSSProperties}
         >
           <div className="h-[calc(100vh-var(--header-height))]">
             {activeNavItem === 'Messages' ? (
-              <MessagingSystem isArabic={isArabic} currentTheme={currentTheme} />
+              <MessagingSystem isArabic={isArabic} currentTheme={themeMode} />
             ) : renderActiveView()}
           </div>
         </main>

@@ -21,11 +21,17 @@ const stats = [
 
 interface AnalyticsDashboardProps {
     isArabic?: boolean;
+    currentTheme?: string;
 }
 
-export function AnalyticsDashboard({ isArabic = false }: AnalyticsDashboardProps) {
+export function AnalyticsDashboard({ isArabic = false, currentTheme = 'dark' }: AnalyticsDashboardProps) {
+    const isWhite = currentTheme === 'white';
+
     return (
-        <div className="p-8 space-y-8 h-full overflow-y-auto animate-fade-in bg-background">
+        <div className={cn(
+            "p-8 space-y-8 h-full overflow-y-auto animate-fade-in transition-all duration-500",
+            isWhite ? "bg-[#FAFAFB]" : "bg-transparent"
+        )}>
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
@@ -50,7 +56,10 @@ export function AnalyticsDashboard({ isArabic = false }: AnalyticsDashboardProps
                 {stats.map((stat, i) => {
                     const Icon = stat.icon;
                     return (
-                        <div key={i} className="p-6 bg-card rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow">
+                        <div key={i} className={cn(
+                            "p-6 rounded-2xl border shadow-sm transition-shadow",
+                            isWhite ? "bg-white border-slate-200" : "bg-card border-border"
+                        )}>
                             <div className="flex justify-between items-start mb-4">
                                 <div className="p-2 bg-primary/10 rounded-lg text-primary">
                                     <Icon className="w-5 h-5" />
@@ -67,8 +76,8 @@ export function AnalyticsDashboard({ isArabic = false }: AnalyticsDashboardProps
                                 </div>
                             </div>
                             <div>
-                                <p className="text-sm text-muted-foreground">{stat.label}</p>
-                                <h3 className="text-2xl font-bold mt-1">{stat.value}</h3>
+                                <p className={cn("text-sm", isWhite ? "text-slate-500" : "text-muted-foreground")}>{stat.label}</p>
+                                <h3 className={cn("text-2xl font-bold mt-1", isWhite ? "text-slate-900" : "text-foreground")}>{stat.value}</h3>
                             </div>
                         </div>
                     );
@@ -77,10 +86,13 @@ export function AnalyticsDashboard({ isArabic = false }: AnalyticsDashboardProps
 
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 p-6 bg-card rounded-2xl border border-border">
+                <div className={cn(
+                    "lg:col-span-2 p-6 rounded-2xl border shadow-sm",
+                    isWhite ? "bg-white border-slate-200" : "bg-card border-border"
+                )}>
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="font-semibold">{isArabic ? 'حركة الزوار' : 'Visitor Traffic'}</h3>
-                        <div className="flex items-center gap-4 text-xs">
+                        <h3 className={cn("font-semibold", isWhite ? "text-slate-900" : "text-foreground")}>{isArabic ? 'حركة الزوار' : 'Visitor Traffic'}</h3>
+                        <div className={cn("flex items-center gap-4 text-xs", isWhite ? "text-slate-500" : "text-muted-foreground")}>
                             <div className="flex items-center gap-1.5">
                                 <div className="w-3 h-3 rounded-full bg-primary" />
                                 <span>Visits</span>
@@ -100,25 +112,27 @@ export function AnalyticsDashboard({ isArabic = false }: AnalyticsDashboardProps
                                         <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isWhite ? "#e2e8f0" : "hsl(var(--border))"} />
                                 <XAxis
                                     dataKey="name"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                                    tick={{ fill: isWhite ? '#94a3b8' : 'hsl(var(--muted-foreground))', fontSize: 12 }}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                                    tick={{ fill: isWhite ? '#94a3b8' : 'hsl(var(--muted-foreground))', fontSize: 12 }}
                                 />
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: 'hsl(var(--card))',
-                                        borderColor: 'hsl(var(--border))',
+                                        backgroundColor: isWhite ? '#ffffff' : 'hsl(var(--card))',
+                                        borderColor: isWhite ? '#e2e8f0' : 'hsl(var(--border))',
                                         borderRadius: '12px',
-                                        fontSize: '12px'
+                                        fontSize: '12px',
+                                        color: isWhite ? '#0f172a' : 'inherit'
                                     }}
+                                    itemStyle={{ color: isWhite ? '#0f172a' : 'inherit' }}
                                 />
                                 <Area
                                     type="monotone"
@@ -133,26 +147,31 @@ export function AnalyticsDashboard({ isArabic = false }: AnalyticsDashboardProps
                     </div>
                 </div>
 
-                <div className="p-6 bg-card rounded-2xl border border-border">
-                    <h3 className="font-semibold mb-8">{isArabic ? 'مصادر الزيارات' : 'Traffic Sources'}</h3>
+                <div className={cn(
+                    "p-6 rounded-2xl border shadow-sm",
+                    isWhite ? "bg-white border-slate-200" : "bg-card border-border"
+                )}>
+                    <h3 className={cn("font-semibold mb-8", isWhite ? "text-slate-900" : "text-foreground")}>{isArabic ? 'مصادر الزيارات' : 'Traffic Sources'}</h3>
                     <div className="h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={data}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isWhite ? "#e2e8f0" : "hsl(var(--border))"} />
                                 <XAxis
                                     dataKey="name"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                                    tick={{ fill: isWhite ? '#94a3b8' : 'hsl(var(--muted-foreground))', fontSize: 12 }}
                                 />
                                 <YAxis hide />
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: 'hsl(var(--card))',
-                                        borderColor: 'hsl(var(--border))',
+                                        backgroundColor: isWhite ? '#ffffff' : 'hsl(var(--card))',
+                                        borderColor: isWhite ? '#e2e8f0' : 'hsl(var(--border))',
                                         borderRadius: '12px',
-                                        fontSize: '12px'
+                                        fontSize: '12px',
+                                        color: isWhite ? '#0f172a' : 'inherit'
                                     }}
+                                    itemStyle={{ color: isWhite ? '#0f172a' : 'inherit' }}
                                 />
                                 <Bar
                                     dataKey="conversions"

@@ -34,27 +34,35 @@ const data = [
     { name: 'Sun', visits: 4300, conversions: 3490 },
 ];
 
-export default function DashboardHome({ isArabic = false }: { isArabic?: boolean }) {
+export default function DashboardHome({ isArabic = false, currentTheme = 'dark' }: { isArabic?: boolean, currentTheme?: string }) {
+    const isWhite = currentTheme === 'white';
+
     return (
-        <div className="p-6 md:p-8 space-y-8 animate-fade-in bg-background overflow-y-auto h-full">
+        <div className={cn(
+            "p-6 md:p-8 space-y-8 animate-fade-in overflow-y-auto h-full transition-all duration-500",
+            isWhite ? "bg-[#FAFAFB]" : "bg-transparent"
+        )}>
             {/* Welcome Section */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h1 className="text-3xl font-extrabold tracking-tight text-foreground">
+                    <h1 className={cn("text-3xl font-extrabold tracking-tight", isWhite ? "text-slate-950" : "text-white")}>
                         {isArabic ? 'لوحة التحكم' : "Welcome to your Studio"}
                     </h1>
-                    <p className="text-muted-foreground font-medium mt-1 italic">
+                    <p className={cn("font-medium mt-1 italic", isWhite ? "text-slate-500" : "text-white/50")}>
                         {isArabic ? 'مرحباً بك في استوديو باني الصفحات' : "Propelling your digital vision forward."}
                     </p>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 rounded-xl glass hover:bg-white/10 transition-all font-bold text-sm">
+                    <button className={cn(
+                        "flex items-center gap-2 px-4 py-2 rounded-xl transition-all font-bold text-sm border",
+                        isWhite ? "bg-white text-slate-900 border-slate-200 hover:bg-slate-50" : "glass text-white border-white/10 hover:bg-white/10"
+                    )}>
                         <Globe className="w-4 h-4 text-primary" />
-                        Live Preview
+                        {isArabic ? 'معاينةباشرة' : 'Live Preview'}
                     </button>
                     <button className="flex items-center gap-2 px-4 py-2 rounded-xl premium-gradient text-white font-bold text-sm shadow-lg hover:opacity-90 transition-all active:scale-95">
                         <Plus className="w-4 h-4" />
-                        New Project
+                        {isArabic ? 'مشروع جديد' : 'New Project'}
                     </button>
                 </div>
             </div>
@@ -67,7 +75,10 @@ export default function DashboardHome({ isArabic = false }: { isArabic?: boolean
                     { label: isArabic ? 'مؤشر النقر' : 'CTR Index', value: '12.4%', change: '-2%', icon: MousePointer2, trend: 'down' },
                     { label: isArabic ? 'حالة السحابة' : 'Cloud Status', value: isArabic ? 'نشط' : 'Active', icon: Globe, trend: 'neutral' },
                 ].map((stat, i) => (
-                    <div key={i} className="p-6 rounded-3xl glass border border-white/10 group hover:border-primary/30 transition-all text-left">
+                    <div key={i} className={cn(
+                        "p-6 rounded-3xl border group hover:border-primary/30 transition-all text-left shadow-sm",
+                        isWhite ? "bg-white border-slate-200" : "glass border-white/10"
+                    )}>
                         <div className="flex justify-between items-start mb-4">
                             <div className="p-3 premium-gradient rounded-2xl text-white shadow-lg group-hover:scale-110 transition-transform">
                                 <stat.icon className="w-5 h-5" />
@@ -82,21 +93,24 @@ export default function DashboardHome({ isArabic = false }: { isArabic?: boolean
                                 </div>
                             )}
                         </div>
-                        <p className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{stat.label}</p>
-                        <h3 className="text-2xl font-black mt-1 text-foreground">{stat.value}</h3>
+                        <p className={cn("text-sm font-bold uppercase tracking-wider", isWhite ? "text-slate-400" : "text-white/40")}>{stat.label}</p>
+                        <h3 className={cn("text-2xl font-black mt-1", isWhite ? "text-slate-900" : "text-white")}>{stat.value}</h3>
                     </div>
                 ))}
             </div>
 
             {/* Main Insights Chart */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 p-8 rounded-3xl glass border border-white/10">
+                <div className={cn(
+                    "lg:col-span-2 p-8 rounded-3xl border shadow-sm",
+                    isWhite ? "bg-white border-slate-200" : "glass border-white/10"
+                )}>
                     <div className="flex items-center justify-between mb-8">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 premium-gradient rounded-xl flex items-center justify-center font-bold text-white shadow-lg">
                                 <BarChart3 className="w-5 h-5" />
                             </div>
-                            <h3 className="text-xl font-bold">{isArabic ? 'ذكاء النمو' : 'Growth Intelligence'}</h3>
+                            <h3 className={cn("text-xl font-bold", isWhite ? "text-slate-900" : "text-white")}>{isArabic ? 'ذكاء النمو' : 'Growth Intelligence'}</h3>
                         </div>
                         <div className="flex gap-2">
                             <div className="flex items-center gap-2 text-xs font-bold px-3 py-1.5 rounded-full bg-primary/10 text-primary uppercase tracking-widest">Real-time Data</div>
@@ -111,29 +125,29 @@ export default function DashboardHome({ isArabic = false }: { isArabic?: boolean
                                         <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isWhite ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)"} />
                                 <XAxis
                                     dataKey="name"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11, fontWeight: 'bold' }}
+                                    tick={{ fill: isWhite ? '#94a3b8' : 'hsl(var(--muted-foreground))', fontSize: 11, fontWeight: 'bold' }}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11, fontWeight: 'bold' }}
+                                    tick={{ fill: isWhite ? '#94a3b8' : 'hsl(var(--muted-foreground))', fontSize: 11, fontWeight: 'bold' }}
                                 />
                                 <Tooltip
                                     contentStyle={{
-                                        backgroundColor: 'rgba(255,255,255,0.05)',
+                                        backgroundColor: isWhite ? '#ffffff' : 'rgba(255,255,255,0.05)',
                                         backdropFilter: 'blur(10px)',
-                                        borderColor: 'rgba(255,255,255,0.1)',
+                                        borderColor: isWhite ? '#e2e8f0' : 'rgba(255,255,255,0.1)',
                                         borderRadius: '16px',
                                         fontSize: '12px',
                                         fontWeight: 'bold',
-                                        color: 'white'
+                                        color: isWhite ? '#0f172a' : 'white'
                                     }}
-                                    itemStyle={{ color: 'white' }}
+                                    itemStyle={{ color: isWhite ? '#0f172a' : 'white' }}
                                 />
                                 <Area
                                     type="monotone"
@@ -160,8 +174,11 @@ export default function DashboardHome({ isArabic = false }: { isArabic?: boolean
                         </button>
                     </div>
 
-                    <div className="p-6 rounded-3xl glass border border-white/10">
-                        <div className="flex items-center gap-2 mb-4 font-bold text-sm">
+                    <div className={cn(
+                        "p-6 rounded-3xl border shadow-sm",
+                        isWhite ? "bg-white border-slate-200" : "glass border-white/10"
+                    )}>
+                        <div className={cn("flex items-center gap-2 mb-4 font-bold text-sm", isWhite ? "text-slate-900" : "text-white")}>
                             <Bell className="w-4 h-4 text-primary" />
                             Activity Stream
                         </div>
@@ -171,12 +188,15 @@ export default function DashboardHome({ isArabic = false }: { isArabic?: boolean
                                 { user: 'John K.', action: 'updated "Pricing"', time: '15m' },
                                 { user: 'Studio AI', action: 'optimized assets', time: '1h' },
                             ].map((item, i) => (
-                                <div key={i} className="flex items-center justify-between text-xs pb-4 border-b border-white/5 last:border-0 last:pb-0">
+                                <div key={i} className={cn(
+                                    "flex items-center justify-between text-xs pb-4 border-b last:border-0 last:pb-0",
+                                    isWhite ? "border-slate-100" : "border-white/5"
+                                )}>
                                     <div className="flex gap-2">
-                                        <span className="font-black text-foreground">{item.user}</span>
-                                        <span className="text-muted-foreground">{item.action}</span>
+                                        <span className={cn("font-black", isWhite ? "text-slate-900" : "text-white")}>{item.user}</span>
+                                        <span className={cn(isWhite ? "text-slate-500" : "text-white/50")}>{item.action}</span>
                                     </div>
-                                    <span className="text-muted-foreground font-bold">{item.time}</span>
+                                    <span className={cn("font-bold", isWhite ? "text-slate-400" : "text-white/40")}>{item.time}</span>
                                 </div>
                             ))}
                         </div>

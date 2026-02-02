@@ -19,21 +19,26 @@ const recentBroadcasts: Broadcast[] = [
 
 interface BroadcastPanelProps {
     isArabic?: boolean;
+    currentTheme?: string;
 }
 
-export function BroadcastPanel({ isArabic = false }: BroadcastPanelProps) {
+export function BroadcastPanel({ isArabic = false, currentTheme = 'dark' }: BroadcastPanelProps) {
     const [selectedType, setSelectedType] = useState<'info' | 'warning' | 'critical'>('info');
+    const isWhite = currentTheme === 'white';
 
     return (
-        <div className="p-8 space-y-8 h-full overflow-y-auto animate-fade-in bg-background">
+        <div className={cn(
+            "p-8 space-y-8 h-full overflow-y-auto animate-fade-in transition-all duration-500",
+            isWhite ? "bg-[#FAFAFB]" : "bg-transparent"
+        )}>
             {/* Header */}
             <div className="flex justify-between items-center">
                 <div>
-                    <h1 className="text-2xl font-bold flex items-center gap-2">
+                    <h1 className={cn("text-2xl font-bold flex items-center gap-2", isWhite ? "text-slate-900" : "text-white")}>
                         <Megaphone className="w-7 h-7 text-primary" />
                         {isArabic ? 'بث التنبيهات' : 'Broadcast Center'}
                     </h1>
-                    <p className="text-muted-foreground mt-1">
+                    <p className={cn("mt-1", isWhite ? "text-slate-500" : "text-muted-foreground")}>
                         {isArabic ? 'إرسال تنبيهات فورية لجميع المشرفين' : 'Send instant alerts to all administrators'}
                     </p>
                 </div>
@@ -41,15 +46,18 @@ export function BroadcastPanel({ isArabic = false }: BroadcastPanelProps) {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* New Broadcast Form */}
-                <div className="bg-card p-6 rounded-2xl border border-border shadow-sm">
-                    <h3 className="font-semibold mb-6 flex items-center gap-2">
+                <div className={cn(
+                    "p-6 rounded-2xl border shadow-sm transition-all",
+                    isWhite ? "bg-white border-slate-200" : "bg-card border-border"
+                )}>
+                    <h3 className={cn("font-semibold mb-6 flex items-center gap-2", isWhite ? "text-slate-900" : "text-foreground")}>
                         <Send className="w-4 h-4" />
                         {isArabic ? 'إنشاء بث جديد' : 'Compose New Broadcast'}
                     </h3>
 
                     <div className="space-y-4">
                         <div>
-                            <label className="text-sm font-medium mb-1.5 block">Alert Type</label>
+                            <label className={cn("text-sm font-medium mb-1.5 block", isWhite ? "text-slate-700" : "text-foreground")}>Alert Type</label>
                             <div className="grid grid-cols-3 gap-3">
                                 {(['info', 'warning', 'critical'] as const).map((type) => (
                                     <button
@@ -61,7 +69,7 @@ export function BroadcastPanel({ isArabic = false }: BroadcastPanelProps) {
                                                 ? (type === 'info' ? "bg-blue-100 border-blue-500 text-blue-700" :
                                                     type === 'warning' ? "bg-amber-100 border-amber-500 text-amber-700" :
                                                         "bg-red-100 border-red-500 text-red-700")
-                                                : "bg-secondary/50 border-transparent text-muted-foreground hover:bg-secondary"
+                                                : (isWhite ? "bg-slate-100 border-slate-200 text-slate-500 hover:bg-slate-200" : "bg-secondary/50 border-transparent text-muted-foreground hover:bg-secondary")
                                         )}
                                     >
                                         {type.toUpperCase()}
@@ -71,8 +79,11 @@ export function BroadcastPanel({ isArabic = false }: BroadcastPanelProps) {
                         </div>
 
                         <div>
-                            <label className="text-sm font-medium mb-1.5 block">Recipients</label>
-                            <select className="w-full bg-secondary/50 border-none rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary">
+                            <label className={cn("text-sm font-medium mb-1.5 block", isWhite ? "text-slate-700" : "text-foreground")}>Recipients</label>
+                            <select className={cn(
+                                "w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition-all",
+                                isWhite ? "bg-slate-100 border-slate-200 text-slate-900 focus:bg-white" : "bg-secondary/50 border-transparent text-white focus:bg-secondary"
+                            )}>
                                 <option>All Administrators</option>
                                 <option>Only Primary Admins</option>
                                 <option>Only Moderators</option>
@@ -80,24 +91,30 @@ export function BroadcastPanel({ isArabic = false }: BroadcastPanelProps) {
                         </div>
 
                         <div>
-                            <label className="text-sm font-medium mb-1.5 block">Alert Title</label>
+                            <label className={cn("text-sm font-medium mb-1.5 block", isWhite ? "text-slate-700" : "text-foreground")}>Alert Title</label>
                             <input
                                 type="text"
                                 placeholder="Brief summary of the alert..."
-                                className="w-full bg-secondary/50 border-none rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary"
+                                className={cn(
+                                    "w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition-all",
+                                    isWhite ? "bg-slate-100 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white" : "bg-secondary/50 border-transparent text-white placeholder:text-white/40 focus:bg-secondary"
+                                )}
                             />
                         </div>
 
                         <div>
-                            <label className="text-sm font-medium mb-1.5 block">Message Content</label>
+                            <label className={cn("text-sm font-medium mb-1.5 block", isWhite ? "text-slate-700" : "text-foreground")}>Message Content</label>
                             <textarea
                                 rows={4}
                                 placeholder="Detailed message for administrators..."
-                                className="w-full bg-secondary/50 border-none rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary resize-none"
+                                className={cn(
+                                    "w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-1 focus:ring-primary outline-none transition-all resize-none",
+                                    isWhite ? "bg-slate-100 border-slate-200 text-slate-900 placeholder:text-slate-400 focus:bg-white" : "bg-secondary/50 border-transparent text-white placeholder:text-white/40 focus:bg-secondary"
+                                )}
                             />
                         </div>
 
-                        <button className="w-full py-3 gradient-primary text-primary-foreground font-semibold rounded-xl shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                        <button className="w-full py-3 premium-gradient text-white font-semibold rounded-xl shadow-lg hover:opacity-90 transition-all flex items-center justify-center gap-2">
                             <Megaphone className="w-4 h-4" />
                             Send Broadcast
                         </button>
@@ -106,13 +123,16 @@ export function BroadcastPanel({ isArabic = false }: BroadcastPanelProps) {
 
                 {/* Recent Broadcasts */}
                 <div className="space-y-6">
-                    <h3 className="font-semibold flex items-center gap-2">
+                    <h3 className={cn("font-semibold flex items-center gap-2", isWhite ? "text-slate-900" : "text-foreground")}>
                         <History className="w-4 h-4" />
                         Recent Broadcasts
                     </h3>
                     <div className="space-y-4">
                         {recentBroadcasts.map((broadcast) => (
-                            <div key={broadcast.id} className="bg-card p-5 rounded-xl border border-border shadow-sm group hover:border-primary/30 transition-all">
+                            <div key={broadcast.id} className={cn(
+                                "p-5 rounded-xl border shadow-sm group hover:border-primary/30 transition-all",
+                                isWhite ? "bg-white border-slate-200" : "bg-card border-border"
+                            )}>
                                 <div className="flex justify-between items-start mb-2">
                                     <div className="flex items-center gap-2">
                                         <span className={cn(
@@ -121,15 +141,15 @@ export function BroadcastPanel({ isArabic = false }: BroadcastPanelProps) {
                                                 broadcast.type === 'warning' ? "bg-amber-500" :
                                                     "bg-red-500"
                                         )} />
-                                        <h4 className="font-semibold text-sm">{broadcast.title}</h4>
+                                        <h4 className={cn("font-semibold text-sm", isWhite ? "text-slate-900" : "text-foreground")}>{broadcast.title}</h4>
                                     </div>
-                                    <span className="text-[10px] text-muted-foreground">{broadcast.timestamp}</span>
+                                    <span className={cn("text-[10px]", isWhite ? "text-slate-400" : "text-muted-foreground")}>{broadcast.timestamp}</span>
                                 </div>
-                                <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                                <p className={cn("text-xs mb-3 leading-relaxed", isWhite ? "text-slate-500" : "text-muted-foreground")}>
                                     {broadcast.message}
                                 </p>
-                                <div className="flex justify-between items-center text-[10px] pt-3 border-t border-border">
-                                    <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <div className={cn("flex justify-between items-center text-[10px] pt-3 border-t", isWhite ? "border-slate-100" : "border-border")}>
+                                    <div className={cn("flex items-center gap-1.5", isWhite ? "text-slate-400" : "text-muted-foreground")}>
                                         <Users className="w-3 h-3" />
                                         {broadcast.recipients}
                                     </div>
